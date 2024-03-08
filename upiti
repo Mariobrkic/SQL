@@ -1,0 +1,55 @@
+SELECT * 
+FROM nastavnik
+--SELECT pbrStan, COUNT(*) as broj_nastavnika
+--FROM nastavnik
+--GROUP BY pbrStan;
+
+
+--SELECT mjesto.nazMjesto, nastavnik.pbrStan, COUNT(*) as broj_nastavnika
+--FROM nastavnik
+--JOIN mjesto ON nastavnik.pbrStan = mjesto.pbr
+--GROUP BY nastavnik.pbrStan, mjesto.nazMjesto;
+
+SELECT * FROM
+stud
+
+
+
+SELECT  *
+FROM stud
+JOIN ispit ON stud.mbrStud = ispit.mbrStud
+JOIN nastavnik ON ispit.sifNastavnik = nastavnik.sifNastavnik
+WHERE sifOrgjed = '100002';
+
+
+--CREATE VIEW PogledOrganizacijskeJedinice
+--AS
+--SELECT DISTINCT sifOrgjed , nazOrgjed 
+--FROM ispit
+--JOIN orgjed ON ispit.sifPred = orgjed.sifOrgjed;
+
+
+--CREATE PROCEDURE BrojPolozenihIspita
+--    @maticniBroj VARCHAR(20)
+--AS
+--BEGIN
+--    DECLARE @brojPolozenihIspita INT;
+
+--    SELECT @brojPolozenihIspita = COUNT(*)
+--    FROM ispit
+--    WHERE mbrStud = @maticniBroj AND ocjena >= 5;
+
+    
+--   IF @brojPolozenihIspita IS NULL
+--        SET @brojPolozenihIspita = 0;
+
+--    SELECT @brojPolozenihIspita AS 'BrojPolozenihIspita';
+--END;
+
+CREATE TRIGGER SprjeciBrisanjePred
+ON Pred
+INSTEAD OF DELETE
+AS
+BEGIN
+    PRINT 'Tablicu predmeta nije moguće obrisati';
+END;
