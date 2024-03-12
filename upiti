@@ -46,10 +46,12 @@ WHERE sifOrgjed = '100002';
 --    SELECT @brojPolozenihIspita AS 'BrojPolozenihIspita';
 --END;
 
+
 CREATE TRIGGER SprjeciBrisanjePred
 ON Pred
 INSTEAD OF DELETE
 AS
 BEGIN
+      ROLLBACK TRANSACTION 
     PRINT 'Tablicu predmeta nije moguće obrisati';
 END;
