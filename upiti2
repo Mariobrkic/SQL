@@ -1,0 +1,99 @@
+USE master;
+GO
+
+CREATE DATABASE Ispit;
+GO
+
+USE Ispit;
+GO
+
+ALTER DATABASE Ispit
+ADD FILEGROUP TekuciPodaci;
+GO
+
+ALTER DATABASE Ispit
+ADD FILE
+(
+    NAME = Prodaja,
+    FILENAME = '\C:\Users\Mario\Ispit\Prodaja.ndf'
+    SIZE = 10MB,
+    MAXSIZE = UNLIMITED,
+    FILEGROWTH = 5MB
+);
+GO
+
+
+
+
+CREATE SCHEMA RadneTab;
+GO
+
+
+USE RadneTab;
+GO
+
+
+CREATE TABLE Zaposleni (
+    ZaposlenikID INT PRIMARY KEY,
+    Ime VARCHAR(50),
+    Prezime VARCHAR(50),
+    Pozicija VARCHAR(50),
+    Placa DECIMAL(10, 2)
+);
+
+
+CREATE TABLE Projekt (
+    ProjektID INT PRIMARY KEY,
+    Naziv VARCHAR(100),
+    Opis TEXT,
+    Rok DATE
+);
+
+
+CREATE TABLE Kupci (
+    KupacID INT PRIMARY KEY,
+    Ime VARCHAR(50),
+    Prezime VARCHAR(50),
+    Adresa VARCHAR(100),
+    Email VARCHAR(50)
+);
+
+
+
+CREATE LOGIN Tanja WITH PASSWORD = 'L0z&nka';
+
+
+
+USE Ispit;
+GO
+
+CREATE USER Tanja FOR LOGIN Tanja;
+
+ALTER ROLE RadneTab ADD MEMBER Tanja;
+
+
+
+USE RadneTab
+
+GRANT SELECT, INSERT, UPDATE ON SCHEMA::RadneTab TO Tanja;
+
+
+GRANT SELECT, INSERT, UPDATE ON RadneTab.Zaposleni TO Tanja;
+GRANT SELECT, INSERT, UPDATE ON RadneTab.Projekt TO Tanja;
+GRANT SELECT, INSERT, UPDATE ON RadneTab.Kupci TO Tanja;
+
+
+
+-- Kreiranje uređaja RezervnaKopija
+USE master;
+GO
+
+EXEC sp_addumpdevice 'Disk', 'RezervnaKopija', 'C:\Users\Mario\Ispit\RezervnaKopija.bak';
+
+
+
+
+BACKUP DATABASE Ispit TO RezervnaKopija; 
+
+
+RESTORE DATABASE Ispit FROM RezervnaKopija WITH REPLACE; 
