@@ -1,0 +1,59 @@
+CREATE PROCEDURE PosaljiIzvjestajOPlaci()
+BEGIN
+    IF DAYOFWEEK(CURDATE()) = 6 AND DAY(CURDATE()) = 15 THEN
+          CALL posalji_email(adrese_kolega);
+        SELECT 'Izvještaj o plaći kolegama poslan.';
+    ELSE
+        -- Ako danas nije 15. u mjesecu ili nije petak, ne radi ništa
+        SELECT 'Danas nije dan za slanje izvještaja o plaći kolegama.';
+    END IF;
+END;
+
+import mysql.connector
+import smtplib
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+
+def posalji_email(adrese):
+    # Konfiguracija SMTP servera
+    smtp_server = 'smtp.example.com'
+    smtp_port = 587
+    smtp_username = 'your_username'
+    smtp_password = 'your_password'
+
+    # Konfiguracija emaila
+    msg = MIMEMultipart()
+    msg['From'] = 'your_email@example.com'
+    msg['Subject'] = 'Izvještaj o plaći'
+
+    # Tekst poruke
+    body = 'Izvještaj o plaći kolegama je stigao.'
+    msg.attach(MIMEText(body, 'plain'))
+
+    # Slanje emaila na svaku adresu
+    for adresa in adrese:
+        msg['To'] = adresa
+        server = smtplib.SMTP(smtp_server, smtp_port)
+        server.starttls()
+        server.login(smtp_username, smtp_password)
+        server.send_message(msg)
+        server.quit()
+
+# Spoji se na MySQL bazu podataka
+conn = mysql.connector.connect(
+    host="localhost",
+    user="your_username",
+    password="your_password",
+    database="your_database"
+)
+
+# Izvrši SQL upit za dohvaćanje adresa kolega
+cursor = conn.cursor()
+cursor.execute("SELECT email FROM kolege")
+adrese_kolega = [row[0] for row in cursor.fetchall()]
+
+# Poziv funkcije za slanje emaila s listom adresa na koje treba poslati email
+posalji_email(adrese_kolega)
+
+# Zatvori konekciju
+conn.close()
