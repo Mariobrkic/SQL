@@ -1,0 +1,20 @@
+CREATE PROCEDURE PosaljiIzvjestajOPlaci()
+BEGIN
+    -- Deklaracija varijable za adrese kolega
+    DECLARE adrese_kolega TEXT;
+    
+    -- Dohvaćanje adresa kolega iz baze podataka
+    SET adrese_kolega = (SELECT GROUP_CONCAT(email SEPARATOR ', ') FROM kolege);
+    
+    -- Provjera je li danas petak i 15. u mjesecu
+    IF DAYOFWEEK(CURDATE()) = 6 AND DAY(CURDATE()) = 15 THEN
+        -- Pozivanje spremljene procedure za slanje emaila
+        CALL posalji_email(adrese_kolega);
+        
+        -- Ako je email uspješno poslan, vraća se poruka
+        SELECT 'Izvještaj o plaći kolegama poslan.';
+    ELSE
+        -- Ako danas nije petak i 15. u mjesecu, vraća se poruka o neuspjehu
+        SELECT 'Danas nije dan za slanje izvještaja o plaći kolegama.';
+    END IF;
+END;
